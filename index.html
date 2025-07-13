@@ -2,27 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Advanced Todo App</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Categorized To-Do List</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="header">
-    <h1>Todo App</h1>
-    <p>Manage tasks by categories and track your progress!</p>
+  <div class="container">
+    <h1>Categorized To-Do List</h1>
+
+    <!-- Task Input -->
+    <div class="input-group">
+      <input type="text" id="taskInput" placeholder="Task Title..." />
+      <input type="text" id="descriptionInput" placeholder="Description (optional)" />
+      <select id="categorySelect">
+        <option value="Work">Work</option>
+        <option value="Personal">Personal</option>
+        <option value="Health">Health</option>
+      </select>
+      <input type="date" id="dueDate" />
+      <select id="prioritySelect">
+        <option value="urgent-important">Urgent & Important</option>
+        <option value="urgent-not-important">Urgent & Not Important</option>
+        <option value="not-urgent-important">Not Urgent & Important</option>
+        <option value="not-urgent-not-important">Not Urgent & Not Important</option>
+      </select>
+      <button id="addBtn">Add Task</button>
+    </div>
+
+    <!-- Progress -->
+    <div id="progress">
+      <div class="progress-text">
+        <span id="doneCount">Done: 0</span> |
+        <span id="leftCount">Left: 0</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- Task Sections -->
+    <div id="taskSections">
+      <div class="task-section"><h2>Work</h2><ul id="Work"></ul></div>
+      <div class="task-section"><h2>Personal</h2><ul id="Personal"></ul></div>
+      <div class="task-section"><h2>Health</h2><ul id="Health"></ul></div>
+    </div>
+   
+    <!-- Dark/Light Toggle -->
+    <button id="colorToggleBtn" class="color-toggle">Toggle Dark/Light Mode</button>
   </div>
 
-  <div class="summary">
-    <p>Total Tasks Done: <span>12</span> / Total Tasks: <span>20</span></p>
-  </div>
-
-  <div class="sections">
-    <section id="personal" class="card"></section>
-    <section id="work" class="card"></section>
-    <section id="health" class="card"></section>
-    <section id="coding" class="card"></section>
-  </div>
-
-  <script src="app.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
