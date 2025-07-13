@@ -1,0 +1,144 @@
+:root {
+  --bg: #ffffff;
+  --text: #222;
+  --card: #f0f0f0;
+  --accent: #007bff;
+}
+
+body.dark {
+  --bg: #1e1e1e;
+  --text: #eaeaea;
+  --card: #2c2c2c;
+  --accent: #66aaff;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  transition: background 0.3s, color 0.3s;
+}
+
+.container {
+  max-width: 480px;
+  margin: 60px auto;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+h1 {
+  margin: 0;
+}
+
+#toggle-theme {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+form {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+input[type="text"],
+select {
+  flex: 1 1 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid var(--card);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--text);
+}
+
+button {
+  padding: 12px 16px;
+  font-size: 16px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.filters button {
+  padding: 6px 12px;
+  background: none;
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.filters button.active {
+  background: var(--accent);
+  color: white;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  background: var(--card);
+  padding: 14px 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+li.completed span {
+  text-decoration: line-through;
+  color: gray;
+}
+
+li span {
+  flex: 1;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+#task-stats {
+  background: var(--card);
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 20px;
+  font-size: 14px;
+}
