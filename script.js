@@ -1,123 +1,96 @@
-const form = document.getElementById('todo-form');
-const taskInput = document.getElementById('task-input');
-const categoryInput = document.getElementById('task-category');
-const todoList = document.getElementById('todo-list');
-const themeToggle = document.getElementById('toggle-theme');
-const filters = document.querySelectorAll('.filters button');
-const statsBox = document.getElementById('task-stats');
+const addBtn = document.getElementById('addBtn');
+const taskInput = document.getElementById('taskInput');
+const descriptionInput = document.getElementById('descriptionInput');
+const categorySelect = document.getElementById('categorySelect');
+const dueDateInput = document.getElementById('dueDate');
+const prioritySelect = document.getElementById('prioritySelect');
+const colorToggleBtn = document.getElementById('colorToggleBtn');
+const doneCountSpan = document.getElementById('doneCount');
+const leftCountSpan = document.getElementById('leftCount');
+const progressFill = document.getElementById('progressFill');
 
-let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-let filter = 'all';
+let totalTasks = 0;
+let completedTasks = 0;
 
-function renderTasks() {
-  todoList.innerHTML = '';
-  statsBox.innerHTML = '';
-
-  const filteredTasks = tasks.filter(task => {
-    if (filter === 'active') return !task.completed;
-    if (filter === 'completed') return task.completed;
-    return true;
-  });
-
-  filteredTasks.forEach((task, index) => {
-    const li = document.createElement('li');
-    if (task.completed) li.classList.add('completed');
-
-    const span = document.createElement('span');
-    span.textContent = `[${task.category}] ${task.text}`;
-    span.onclick = () => editTask(index);
-
-    const actions = document.createElement('div');
-    actions.className = 'actions';
-
-    const toggleBtn = document.createElement('button');
-    toggleBtn.textContent = task.completed ? '✅' : '☑️';
-    toggleBtn.onclick = () => {
-      tasks[index].completed = !tasks[index].completed;
-      saveAndRender();
-    };
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = '🗑️';
-    deleteBtn.onclick = () => {
-      tasks.splice(index, 1);
-      saveAndRender();
-    };
-
-    actions.appendChild(toggleBtn);
-    actions.appendChild(deleteBtn);
-
-    li.appendChild(span);
-    li.appendChild(actions);
-    todoList.appendChild(li);
-  });
-
-  const total = tasks.length;
-  const done = tasks.filter(t => t.completed).length;
-  const remaining = total - done;
-
-  let categoryStats = {};
-  tasks.forEach(task => {
-    const cat = task.category;
-    if (!categoryStats[cat]) categoryStats[cat] = { total: 0, done: 0 };
-    categoryStats[cat].total += 1;
-    if (task.completed) categoryStats[cat].done += 1;
-  });
-
-  let statsHtml = `<p><strong>Overall:</strong> ${done} done / ${remaining} left</p>`;
-  statsHtml += `<ul>`;
-  for (let cat in categoryStats) {
-    const { total, done } = categoryStats[cat];
-    const left = total - done;
-    const displayName = {
-      personal: 'Personal',
-      health: 'Health',
-      official: 'Official',
-      other: 'Other Activities'
-    }[cat] || cat;
-
-    statsHtml += `<li><strong>${displayName}</strong>: ${done} done / ${left} left</li>`;
-  }
-  statsHtml += `</ul>`;
-
-  statsBox.innerHTML = statsHtml;
+// Apply theme from localStorage on page load
+if (localStorage.getItem('theme') === 'dark') {
+  document.body.classList.add('dark');
 }
 
-function editTask(index) {
-  const newText = prompt('Edit your task:', tasks[index].text);
-  if (newText !== null && newText.trim() !== '') {
-    tasks[index].text = newText.trim();
-    saveAndRender();
-  }
-}
-
-function saveAndRender() {
-  localStorage.setItem('tasks', JSON.stringify(tasks));
-  renderTasks();
-}
-
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const taskText = taskInput.value.trim();
-  const category = categoryInput.value;
-  if (taskText) {
-    tasks.push({ text: taskText, completed: false, category });
-    taskInput.value = '';
-    saveAndRender();
-  }
-});
-
-themeToggle.addEventListener('click', () => {
+// Dark/light toggle with localStorage
+colorToggleBtn.addEventListener('click', () => {
   document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
 });
 
-filters.forEach(btn => {
-  btn.addEventListener('click', () => {
-    filters.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    filter = btn.dataset.filter;
-    renderTasks();
+// Task adding logic
+addBtn.addEventListener('click', addTask);
+taskInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') addTask();
+});
+
+function addTask() {
+  const title = taskInput.value.trim();
+  const description = descriptionInput.value.trim();
+  const category = categorySelect.value;
+  const dueDate = dueDateInput.value;
+  const priority = prioritySelect.value.toLowerCase();
+
+  if (!title) return;
+
+  const li = document.createElement('li');
+  li.classList.add(priority);
+
+  const titleEl = document.createElement('div');
+  titleEl.textContent = title;
+
+  if (description) {
+    const descEl = document.createElement('div');
+    descEl.className = 'details';
+    descEl.textContent = `Note: ${description}`;
+    li.appendChild(descEl);
+  }
+
+  const info = document.createElement('span');
+  info.className = 'details';
+  info.textContent = `Due: ${dueDate || 'None'} | Priority: ${priority.charAt(0).toUpperCase() + priority.slice(1)}`;
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'delete-btn';
+  deleteBtn.textContent = '✕';
+  deleteBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (li.classList.contains('completed')) completedTasks--;
+    li.remove();
+    totalTasks--;
+    updateProgress();
   });
-});
 
-renderTasks();
+  li.appendChild(titleEl);
+  li.appendChild(info);
+  li.appendChild(deleteBtn);
+
+  li.addEventListener('click', () => {
+    li.classList.toggle('completed');
+    li.classList.contains('completed') ? completedTasks++ : completedTasks--;
+    updateProgress();
+  });
+
+  document.getElementById(category).appendChild(li);
+
+  taskInput.value = '';
+  descriptionInput.value = '';
+  dueDateInput.value = '';
+  prioritySelect.value = 'urgent-important';
+
+  totalTasks++;
+  updateProgress();
+}
+
+function updateProgress() {
+  doneCountSpan.textContent = `Done: ${completedTasks}`;
+  leftCountSpan.textContent = `Left: ${totalTasks - completedTasks}`;
+  const percent = totalTasks ? (completedTasks / totalTasks) * 100 : 0;
+  progressFill.style.width = `${percent}%`;
+}
